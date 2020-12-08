@@ -21,19 +21,16 @@ namespace Device_BE.Controllers
             _context = context;
         }
         [HttpGet]
-        public IEnumerable<LoaiTuDienModel> getPage(string sSearch,string ma)
+        public IEnumerable<LoaiTuDienModel> getPage( SearchModel search)
         {
-            var data = _context.CMLoaiTuDiens;
+            var data = _context.CMLoaiTuDiens.Skip((search.pageIndex - 1) * search.pageSize).Take(search.pageSize);
             var query = from list in data
                         select list;
-            if (!String.IsNullOrEmpty(sSearch))
+            if (!String.IsNullOrEmpty(search.sSearch))
             {
-                query = query.Where(x => x.Ten.Contains(sSearch));
+                query = query.Where(x => x.Ten.Contains(search.sSearch) || x.MaLoai.Contains(search.sSearch));
             }
-            if (!String.IsNullOrEmpty(ma))
-            {
-                query = query.Where(x => x.MaLoai == ma);
-            }
+              
             return query.Select(x => new LoaiTuDienModel
             {
                 Id = x.Id,
