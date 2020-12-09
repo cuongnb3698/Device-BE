@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 
 namespace Device_BE.Controllers
 {
-    [Route("api/loaitudien")]
+    [Route("api/tudien")]
     [ApiController]
-    public class DMLoaiTuDienController : ControllerBase
+    public class DMTuDienController : ControllerBase
     {
         private readonly DeviceContext _context;
-        public DMLoaiTuDienController(DeviceContext context)
+        public DMTuDienController(DeviceContext context)
         {
             _context = context;
         }
@@ -25,38 +25,44 @@ namespace Device_BE.Controllers
         public async Task<ActionResult> getPage(SearchModel search)
         {
             ListSelect listData = new ListSelect();
-            var data = await _context.CMLoaiTuDiens.ToListAsync();
+            var data = await _context.CMTuDiens.ToListAsync();
             listData.total = data.Count();
             data = data.Skip((search.pageIndex) * search.pageSize).Take(search.pageSize).ToList();
-            var query =  from ltt in data
-                        select ltt;
+            var query = from td in data
+                        join ltd in _context.CMLoaiTuDiens on td.CMLoaiTuDien.Id equals ltd.Id
+                        select (td,ltd);
             if (!String.IsNullOrEmpty(search.sSearch))
             {
                 search.sSearch = search.sSearch.ToLower();
-                query = query.Where(x => x.Ten.ToLower().Contains(search.sSearch) || x.MaLoai.Contains(search.sSearch));
+                query = query.Where(x => x.td.Ten.ToLower().Contains(search.sSearch));
             }
 
-            listData.List = query.Select(x => new LoaiTuDienModel
+            listData.List = query.Select(x => new TuDienModel
             {
-                Id = x.Id,
-                MaLoai = x.MaLoai,
-                Ten = x.Ten
+                Id = x.td.Id,
+                TenNgan = x.td.TenNgan,
+                Ten = x.td.Ten,
+                MaTuDien = x.td.MaTuDien,
+                GhiChu = x.td.GhiChu,
+                Active = x.td.Active,
+                UuTien = x.td.UuTien,
+                LoaiTuDien = x.ltd.Ten
             });
             return Ok(listData);
         }
 
 
         [HttpPost]
-        public ActionResult Create(CMLoaiTuDien model)
+        public ActionResult Create(CMTuDien model)
         {
             model.Id = new Guid();
-            _context.CMLoaiTuDiens.Add(model);
+            _context.CMTuDiens.Add(model);
             _context.SaveChanges();
             return NoContent();
         }
 
         [HttpPut]
-        public ActionResult Update(CMLoaiTuDien model)
+        public ActionResult Update(CMTuDien model)
         {
             _context.Entry(model).State = EntityState.Modified;
             _context.SaveChanges();
@@ -66,12 +72,12 @@ namespace Device_BE.Controllers
         [HttpDelete]
         public async Task<ActionResult> Delete(Guid id)
         {
-            var delete = await _context.CMLoaiTuDiens.FindAsync(id);
+            var delete = await _context.CMTuDiens.FindAsync(id);
             if (delete == null)
             {
                 return Ok("Xóa Không thành công");
             }
-            _context.CMLoaiTuDiens.Remove(delete);
+            _context.CMTuDiens.Remove(delete);
             await _context.SaveChangesAsync();
             return NoContent();
         }

@@ -34,7 +34,7 @@ namespace Device_BE.Services
             {
                 Id = x.Id,
                 MaLoai = x.MaLoai,
-                TenLoai = x.Ten
+                Ten = x.Ten
             });
         }
 

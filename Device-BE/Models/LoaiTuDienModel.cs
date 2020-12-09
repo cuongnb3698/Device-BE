@@ -9,7 +9,7 @@ namespace Device_BE.Models
     public class LoaiTuDienModel : BaseModel
     {
         public string MaLoai { get; set; }
-        public string TenLoai { get; set; }
+        public string Ten { get; set; }
 
     }
 }

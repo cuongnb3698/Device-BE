@@ -9,8 +9,8 @@ namespace Device_BE.Models
     {
   
         public string sSearch { get; set; }
-        public int pageIndex { get; set; } = 1;
-        public int pageSize { get; set; } = 10;
+        public int pageIndex { get; set; }
+        public int pageSize { get; set; }
 
     }
 }
