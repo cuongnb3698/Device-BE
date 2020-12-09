@@ -20,6 +20,17 @@ namespace Device_BE.Controllers
         {
             _context = context;
         }
+        [HttpGet]
+        [Route("getAll")]
+        public ActionResult getAll()
+        {
+            var data = _context.CMLoaiTuDiens.ToList();
+            return Ok(data);
+                   
+        }
+
+
+
         [HttpPost]
         [Route("getPage")]
         public async Task<ActionResult> getPage(SearchModel search)
@@ -28,7 +39,7 @@ namespace Device_BE.Controllers
             var data = await _context.CMLoaiTuDiens.ToListAsync();
             listData.total = data.Count();
             data = data.Skip((search.pageIndex) * search.pageSize).Take(search.pageSize).ToList();
-            var query =  from ltt in data
+            var query = from ltt in data
                         select ltt;
             if (!String.IsNullOrEmpty(search.sSearch))
             {
